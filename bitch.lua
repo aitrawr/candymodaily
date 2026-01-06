@@ -11,7 +11,7 @@ local root = char:WaitForChild("HumanoidRootPart")
 
 -- SETTINGS
 local offset = Vector3.new(0, 3, 0)
-local nudge = Vector3.new(1.5, 0, 0) -- 👈 anti-stuck movement
+local nudge = Vector3.new(1.5, 0, 0) 
 local teleportDelay = 0.5
 
 local enabled = false
