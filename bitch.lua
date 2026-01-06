@@ -1,6 +1,6 @@
 -- UI LIB
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/0x"))()
-local w1 = library:Window("candy gift for my bb")
+local w1 = library:Window("Candy / Gift TP")
 
 -- SERVICES
 local Players = game:GetService("Players")
@@ -11,7 +11,7 @@ local root = char:WaitForChild("HumanoidRootPart")
 
 -- SETTINGS
 local offset = Vector3.new(0, 3, 0)
-local nudge = Vector3.new(1.5, 0, 0) -- 
+local nudge = Vector3.new(1.5, 0, 0) -- 👈 anti-stuck movement
 local teleportDelay = 0.5
 
 local enabled = false
@@ -38,11 +38,11 @@ local function teleportToModel(model)
 
 	local part = getModelPart(model)
 	if not part then
-		print("[DEBUG] no BasePart in model:", model.Name)
+		print("[DEBUG] No BasePart in model:", model.Name)
 		return
 	end
 
-	print("[DEBUG] tp ->", model.Name)
+	print("[DEBUG] TP ->", model.Name)
 
 	-- teleport
 	root.CFrame = CFrame.new(part.Position + offset)
@@ -84,7 +84,7 @@ w1:Toggle(
 )
 
 w1:Button(
-	"fuck u zenox get me out of this script",
+	"Destroy GUI",
 	function()
 		for _, v in pairs(game.CoreGui:GetChildren()) do
 			if v:FindFirstChild("Top") then
