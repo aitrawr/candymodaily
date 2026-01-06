@@ -1,68 +1,95 @@
-local player = game:GetService("Players").LocalPlayer
-local character = player.Character or player.CharacterAdded:wait()
-local rootpart = character:WaitForChild("HumanoidRootPart")
+-- UI LIB
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/0x"))()
+local w1 = library:Window("candy gift for my bb")
 
-local teleportoffset = Vector3.new(0,3,0)
-local collectionrange = 15
-local checkdelay 0.6 
-local healthvaluename = "Health"
+-- SERVICES
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 
-local function teleportto(target)
-     if target and target:IsA("BasePart") then
-     rootpart.CFrame = CFrame.new(target.Position + teleportoffset)
-     task.wait(0.6)
-    end
+local char = player.Character or player.CharacterAdded:Wait()
+local root = char:WaitForChild("HumanoidRootPart")
+
+-- SETTINGS
+local offset = Vector3.new(0, 3, 0)
+local nudge = Vector3.new(1.5, 0, 0) -- 
+local teleportDelay = 0.5
+
+local enabled = false
+
+print("[DEBUG] Teleporter loaded")
+
+-- UTIL
+local function getModelPart(model)
+	if model.PrimaryPart then
+		return model.PrimaryPart
+	end
+
+	for _, v in ipairs(model:GetDescendants()) do
+		if v:IsA("BasePart") then
+			return v
+		end
+	end
+
+	return nil
 end
 
-local function collectnearbycash()
-    local cashfolder = workspace:FindFirstChild("Cash")
-    if cashfolder then 
-       for _, cash in ipairs(cashfolder:GetChildren()) do
-           if (cash.Position - rootpart.Position).Magnitiude <= collectionrange then
-                local prompt = cash:FindFirstChildWhichIsA("ProximityPrompt")
-                if prompt then 
-                    fireproximityprompt(prompt)
-                end
-            end
-        end
-    end
+local function teleportToModel(model)
+	if not model or not model:IsA("Model") then return end
+
+	local part = getModelPart(model)
+	if not part then
+		print("[DEBUG] no BasePart in model:", model.Name)
+		return
+	end
+
+	print("[DEBUG] tp ->", model.Name)
+
+	-- teleport
+	root.CFrame = CFrame.new(part.Position + offset)
+	task.wait(0.1)
+
+	-- anti-stick nudge
+	root.CFrame = root.CFrame + nudge
+	task.wait(teleportDelay)
 end
 
-local function istargetdestroyed(targetobj)
-     if not targetobj or not targetobj.Parent then return true end
-    
-     local healthvalue = targetobj:FindFirstChild(healthvaluename)
-     if healthvalue:IsA("IntValue") then
-    return healthvalue.Value <= 0
-        end
-    end 
-    return false
-end 
+-- LOOP
+task.spawn(function()
+	while true do
+		if enabled then
+			local candy = workspace:FindFirstChild("Candy")
+			if candy then
+				teleportToModel(candy)
+			end
 
-local function findnewtarget() 
-local damageables = workspace:FindFirstChild("Damageables")
-   if not damageables then return nil end
-   end 
-   for _, (obj.Name == "ATM" or obj.Name == "CashRegister") then
-    local part = obj:FindFirstChildWhichIsA("BasePart")
-    local healthvalue = obj:FindFirstChild(healthvaluename)
-    if part and (not healthvalue or (healthvalue:IsA("IntValue") and healthvalue.Value > 0)) then
-    return part, obj end
-      end
-   end
-   return nil
-end
+			local gift = workspace:FindFirstChild("Gift")
+			if gift then
+				teleportToModel(gift)
+			end
+		end
 
-while true do 
-       collectnearbycash()
-       
-       local targetpart, targetobj, = findnewtarget()
-       if targetpart then teleportto(targetpart)
-        repeat
-            collectnearbycash()
-            task.wait(checkdelay)
-        until istargetdestroyed(targetobj)
-    else
-        task.wait(checkdelay)
-     end
-end
+		task.wait(0.5)
+	end
+end)
+
+-- UI TOGGLE
+w1:Toggle(
+	"Enable Candy/Gift TP",
+	"cgtp",
+	false,
+	function(t)
+		enabled = t
+		print("[DEBUG] Teleporter enabled:", t)
+	end
+)
+
+w1:Button(
+	"fuck u zenox get me out of this script",
+	function()
+		for _, v in pairs(game.CoreGui:GetChildren()) do
+			if v:FindFirstChild("Top") then
+				v:Destroy()
+			end
+		end
+	end
+)
